@@ -1,4 +1,3 @@
-мой путь не легок, но дальше я не придумал
 # Backend Journey
 
 Мой путь в backend-разработку с нуля.
@@ -17,3 +16,4 @@ CLI Task Tracker на Python.
 
 ```bash
 python main.py
+```

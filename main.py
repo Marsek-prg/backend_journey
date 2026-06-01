@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-TASKS_FILE = Path("tasks.json")
+TASKS_FILE = Path(__file__).resolve().parent / "tasks.json"
 
 
 def load_tasks():
@@ -10,30 +10,58 @@ def load_tasks():
 
     try:
         with open(TASKS_FILE, "r", encoding="utf-8") as file:
-            return json.load(file)
+            data = json.load(file)
     except json.JSONDecodeError:
-        print("tasks.json is corrupted. Starting with empty task list.")
+        print("tasks.json поврежден. Начинаем с пустого списка задач.")
         return []
+
+    if not isinstance(data, list):
+        print("tasks.json содержит неверный формат. Начинаем с пустого списка задач.")
+        return []
+
+    return normalize_tasks(data)
+
+
+def normalize_tasks(tasks):
+    normalized_tasks = []
+
+    for task in tasks:
+        if not isinstance(task, dict):
+            continue
+
+        title = str(task.get("title", "")).strip()
+        if not title:
+            continue
+
+        normalized_tasks.append({
+            "id": len(normalized_tasks) + 1,
+            "title": title,
+            "done": bool(task.get("done", False)),
+        })
+
+    return normalized_tasks
 
 
 def save_tasks(tasks):
+    tasks = normalize_tasks(tasks)
+
     with open(TASKS_FILE, "w", encoding="utf-8") as file:
         json.dump(tasks, file, ensure_ascii=False, indent=2)
 
 
 def show_menu():
-    print("\n--- Task Tracker ---")
-    print("1. Add task")
-    print("2. Show tasks")
-    print("3. Mark task as done")
-    print("4. Delete task")
-    print("5. Exit")
+    print("\n--- Трекер задач ---")
+    print("1. Добавить задачу")
+    print("2. Показать задачи")
+    print("3. Отметить задачу выполненной")
+    print("4. Удалить задачу")
+    print("5. Выйти")
 
 
 def add_task(tasks):
-    title = input("Enter task title: ").strip()
+    title = input("Введите название задачи: ").strip()
     if not title:
-        print("Task title cannot be empty.")
+        print("Название задачи не может быть пустым.")
         return
 
     task = {
@@ -43,63 +71,66 @@ def add_task(tasks):
     }
     tasks.append(task)
     save_tasks(tasks)
-    print("Task added.")
+    print("Задача добавлена.")
 
 
 def show_tasks(tasks):
     if not tasks:
-        print("No tasks yet.")
+        print("Задач пока нет.")
         return
 
+    tasks[:] = normalize_tasks(tasks)
+
     for task in tasks:
-        status = "Done" if task["done"] else "Not done"
+        status = "Выполнена" if task["done"] else "Не выполнена"
         print(f'{task["id"]}. {task["title"]} [{status}]')
 
 
 def mark_task_done(tasks):
     if not tasks:
-        print("No tasks available.")
+        print("Нет доступных задач.")
         return
 
     show_tasks(tasks)
 
     try:
-        task_id = int(input("Enter task id to mark as done: "))
+        task_id = int(input("Введите id задачи для отметки: "))
     except ValueError:
-        print("Please enter a valid number.")
+        print("Введите корректное число.")
         return
 
     for task in tasks:
         if task["id"] == task_id:
             task["done"] = True
             save_tasks(tasks)
-            print("Task marked as done.")
+            print("Задача отмечена выполненной.")
             return
 
-    print("Task not found.")
+    print("Задача не найдена.")
 
 
 def delete_task(tasks):
     if not tasks:
-        print("No tasks available.")
+        print("Нет доступных задач.")
         return
 
     show_tasks(tasks)
 
     try:
-        task_id = int(input("Enter task id to delete: "))
+        task_id = int(input("Введите id задачи для удаления: "))
     except ValueError:
-        print("Please enter a valid number.")
+        print("Введите корректное число.")
         return
 
     for task in tasks:
         if task["id"] == task_id:
             tasks.remove(task)
+            tasks[:] = normalize_tasks(tasks)
             save_tasks(tasks)
-            print("Task deleted.")
+            print("Задача удалена.")
             return
 
-    print("Task not found.")
+    print("Задача не найдена.")
 
 
 def main():
@@ -107,7 +138,7 @@ def main():
 
     while True:
         show_menu()
-        choice = input("Choose an option: ").strip()
+        choice = input("Выберите действие: ").strip()
 
         if choice == "1":
             add_task(tasks)
@@ -118,10 +149,10 @@ def main():
         elif choice == "4":
             delete_task(tasks)
         elif choice == "5":
-            print("Goodbye!")
+            print("До свидания!")
             break
         else:
-            print("Invalid option. Try again.")
+            print("Неверный выбор. Попробуйте еще раз.")
 
 
 if __name__ == "__main__":
