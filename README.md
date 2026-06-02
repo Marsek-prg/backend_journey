@@ -17,3 +17,9 @@ CLI Task Tracker на Python.
 ```bash
 python main.py
 ```
+
+## Запуск в браузере
+
+```bash
+python web.py
+```
