@@ -145,7 +145,7 @@ PAGE = """<!doctype html>
     }
 
     button[hidden] {
-      display: none;
+      display: none !important;
     }
 
     button:focus-visible {
