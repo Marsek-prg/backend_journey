@@ -1,8 +1,3 @@
-# Backend Journey
-
-Мой путь в backend-разработку с нуля.
-
-## Первый проект
 CLI Task Tracker на Python.
 
 ## Функции
@@ -22,4 +17,10 @@ python main.py
 
 ```bash
 python web.py
+```
+
+## Тесты
+
+```bash
+python -m unittest discover -s tests -v
 ```
