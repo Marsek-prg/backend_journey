@@ -6,6 +6,7 @@ from tasks import (
     get_tasks_text,
     mark_task_done,
     normalize_tasks,
+    update_task,
 )
 
 
@@ -87,6 +88,32 @@ class MarkTaskDoneTest(unittest.TestCase):
 
         self.assertFalse(result)
         self.assertFalse(tasks[0]["done"])
+
+
+class UpdateTaskTest(unittest.TestCase):
+    def test_update_task_changes_existing_task_title(self):
+        tasks = [{"id": 1, "title": "Old title", "done": False}]
+
+        result = update_task(tasks, 1, " New title ")
+
+        self.assertTrue(result)
+        self.assertEqual(tasks[0]["title"], "New title")
+
+    def test_update_task_rejects_empty_title(self):
+        tasks = [{"id": 1, "title": "Old title", "done": False}]
+
+        result = update_task(tasks, 1, "   ")
+
+        self.assertFalse(result)
+        self.assertEqual(tasks[0]["title"], "Old title")
+
+    def test_update_task_returns_false_for_missing_task(self):
+        tasks = [{"id": 1, "title": "Old title", "done": False}]
+
+        result = update_task(tasks, 2, "New title")
+
+        self.assertFalse(result)
+        self.assertEqual(tasks[0]["title"], "Old title")
 
 
 class DeleteTaskTest(unittest.TestCase):

@@ -1,22 +1,17 @@
 import webbrowser
 
 import uvicorn
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from fastapi.responses import HTMLResponse, Response
-from pydantic import BaseModel
 
-from storage import load_tasks, save_tasks
-from tasks import add_task, delete_task, mark_task_done
+from api import router as tasks_router
 
 
 HOST = "127.0.0.1"
 PORT = 8000
 
 app = FastAPI(title="Task Tracker")
-
-
-class TaskCreate(BaseModel):
-    title: str = ""
+app.include_router(tasks_router)
 
 
 PAGE = """<!doctype html>
@@ -354,44 +349,6 @@ def show_page():
 @app.get("/favicon.ico", status_code=204)
 def favicon():
     return Response(status_code=204)
-
-
-@app.get("/api/tasks")
-def get_tasks():
-    return load_tasks()
-
-
-@app.post("/api/tasks", status_code=201)
-def create_task(task_data: TaskCreate):
-    tasks = load_tasks()
-
-    if not add_task(tasks, task_data.title):
-        raise HTTPException(status_code=400, detail="Task title is required")
-
-    save_tasks(tasks)
-    return tasks
-
-
-@app.post("/api/tasks/{task_id}/done")
-def complete_task(task_id: int):
-    tasks = load_tasks()
-
-    if not mark_task_done(tasks, task_id):
-        raise HTTPException(status_code=404, detail="Task not found")
-
-    save_tasks(tasks)
-    return tasks
-
-
-@app.delete("/api/tasks/{task_id}")
-def remove_task(task_id: int):
-    tasks = load_tasks()
-
-    if not delete_task(tasks, task_id):
-        raise HTTPException(status_code=404, detail="Task not found")
-
-    save_tasks(tasks)
-    return tasks
 
 
 def main():

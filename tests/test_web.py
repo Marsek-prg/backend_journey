@@ -63,6 +63,31 @@ class WebApiTest(unittest.TestCase):
         self.assertEqual(response.status_code, 404)
         self.assertEqual(response.json()["detail"], "Task not found")
 
+    def test_update_task_changes_task_title(self):
+        self.client.post("/api/tasks", json={"title": "Old title"})
+
+        response = self.client.patch("/api/tasks/1", json={"title": " New title "})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.json(),
+            [{"id": 1, "title": "New title", "done": False}],
+        )
+
+    def test_update_task_rejects_empty_title(self):
+        self.client.post("/api/tasks", json={"title": "Old title"})
+
+        response = self.client.patch("/api/tasks/1", json={"title": "   "})
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()["detail"], "Task title is required")
+
+    def test_update_task_returns_404_for_missing_task(self):
+        response = self.client.patch("/api/tasks/404", json={"title": "New title"})
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json()["detail"], "Task not found")
+
     def test_delete_task_removes_task(self):
         self.client.post("/api/tasks", json={"title": "Delete me"})
 
