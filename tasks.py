@@ -52,6 +52,19 @@ def mark_task_done(tasks, task_id):
     return False
 
 
+def update_task(tasks, task_id, title):
+    title = title.strip()
+    if not title:
+        return False
+
+    for task in tasks:
+        if task["id"] == task_id:
+            task["title"] = title
+            return True
+
+    return False
+
+
 def delete_task(tasks, task_id):
     for task in tasks:
         if task["id"] == task_id:

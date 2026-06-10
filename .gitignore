@@ -3,5 +3,6 @@ __pycache__/
 .venv/
 .idea/
 tasks.json
+tasks.db
 user_data.json
 *.log
