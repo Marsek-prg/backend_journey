@@ -13,7 +13,8 @@ CLI Task Tracker на Python.
 - изменить название задачи
 - отметить задачу выполненной
 - удалить задачу
-- сохранить задачи в JSON
+- сохранить задачи в SQLite
+- перенести старые задачи из tasks.json в SQLite
 - открыть трекер задач в браузере
 - REST API на FastAPI
 - автоматическая документация API
@@ -26,7 +27,7 @@ api.py              REST API для задач
 web.py              запуск FastAPI и HTML-страница
 main.py             CLI-версия приложения
 tasks.py            логика работы с задачами
-storage.py          загрузка и сохранение задач в JSON
+storage.py          загрузка и сохранение задач в SQLite
 tests/test_tasks.py тесты логики задач
 tests/test_web.py   тесты API
 requirements.txt    зависимости проекта

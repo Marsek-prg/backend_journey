@@ -11,12 +11,15 @@ from web import app
 class WebApiTest(unittest.TestCase):
     def setUp(self):
         self.temp_dir = tempfile.TemporaryDirectory()
-        self.original_tasks_file = storage.TASKS_FILE
-        storage.TASKS_FILE = Path(self.temp_dir.name) / "tasks.json"
+        self.original_tasks_db = storage.TASKS_DB
+        self.original_legacy_tasks_file = storage.LEGACY_TASKS_FILE
+        storage.TASKS_DB = Path(self.temp_dir.name) / "tasks.db"
+        storage.LEGACY_TASKS_FILE = Path(self.temp_dir.name) / "tasks.json"
         self.client = TestClient(app)
 
     def tearDown(self):
-        storage.TASKS_FILE = self.original_tasks_file
+        storage.TASKS_DB = self.original_tasks_db
+        storage.LEGACY_TASKS_FILE = self.original_legacy_tasks_file
         self.temp_dir.cleanup()
 
     def test_show_page_returns_html(self):
