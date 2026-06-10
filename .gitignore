@@ -4,3 +4,4 @@ __pycache__/
 .idea/
 tasks.json
 user_data.json
+*.log
