@@ -144,6 +144,10 @@ PAGE = """<!doctype html>
       background: var(--primary);
     }
 
+    button[hidden] {
+      display: none;
+    }
+
     button:focus-visible {
       outline: 3px solid rgba(37, 109, 89, 0.2);
       outline-offset: 2px;
