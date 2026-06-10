@@ -1,14 +1,22 @@
-import json
-import re
 import webbrowser
-from http.server import BaseHTTPRequestHandler, HTTPServer
+
+import uvicorn
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import HTMLResponse, Response
+from pydantic import BaseModel
 
 from storage import load_tasks, save_tasks
-from tasks import add_task, delete_task, mark_task_done, normalize_tasks
+from tasks import add_task, delete_task, mark_task_done
 
 
 HOST = "127.0.0.1"
 PORT = 8000
+
+app = FastAPI(title="Task Tracker")
+
+
+class TaskCreate(BaseModel):
+    title: str = ""
 
 
 PAGE = """<!doctype html>
@@ -338,102 +346,59 @@ PAGE = """<!doctype html>
 """
 
 
-class TaskTrackerHandler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        if self.path == "/":
-            self.send_html(PAGE)
-            return
+@app.get("/", response_class=HTMLResponse)
+def show_page():
+    return PAGE
 
-        if self.path == "/api/tasks":
-            self.send_json(load_tasks())
-            return
 
-        if self.path == "/favicon.ico":
-            self.send_response(204)
-            self.end_headers()
-            return
+@app.get("/favicon.ico", status_code=204)
+def favicon():
+    return Response(status_code=204)
 
-        self.send_error(404, "Not found")
 
-    def do_POST(self):
-        if self.path == "/api/tasks":
-            data = self.read_json()
-            tasks = load_tasks()
+@app.get("/api/tasks")
+def get_tasks():
+    return load_tasks()
 
-            if not add_task(tasks, str(data.get("title", ""))):
-                self.send_error(400, "Task title is required")
-                return
 
-            save_tasks(tasks)
-            self.send_json(tasks, status=201)
-            return
+@app.post("/api/tasks", status_code=201)
+def create_task(task_data: TaskCreate):
+    tasks = load_tasks()
 
-        match = re.fullmatch(r"/api/tasks/(\d+)/done", self.path)
-        if match:
-            tasks = load_tasks()
-            task_id = int(match.group(1))
+    if not add_task(tasks, task_data.title):
+        raise HTTPException(status_code=400, detail="Task title is required")
 
-            if not mark_task_done(tasks, task_id):
-                self.send_error(404, "Task not found")
-                return
+    save_tasks(tasks)
+    return tasks
 
-            save_tasks(tasks)
-            self.send_json(tasks)
-            return
 
-        self.send_error(404, "Not found")
+@app.post("/api/tasks/{task_id}/done")
+def complete_task(task_id: int):
+    tasks = load_tasks()
 
-    def do_DELETE(self):
-        match = re.fullmatch(r"/api/tasks/(\d+)", self.path)
-        if not match:
-            self.send_error(404, "Not found")
-            return
+    if not mark_task_done(tasks, task_id):
+        raise HTTPException(status_code=404, detail="Task not found")
 
-        tasks = load_tasks()
-        task_id = int(match.group(1))
+    save_tasks(tasks)
+    return tasks
 
-        if not delete_task(tasks, task_id):
-            self.send_error(404, "Task not found")
-            return
 
-        save_tasks(tasks)
-        self.send_json(tasks)
+@app.delete("/api/tasks/{task_id}")
+def remove_task(task_id: int):
+    tasks = load_tasks()
 
-    def read_json(self):
-        content_length = int(self.headers.get("Content-Length", 0))
-        if content_length == 0:
-            return {}
+    if not delete_task(tasks, task_id):
+        raise HTTPException(status_code=404, detail="Task not found")
 
-        raw_data = self.rfile.read(content_length)
-        return json.loads(raw_data.decode("utf-8"))
-
-    def send_html(self, html):
-        data = html.encode("utf-8")
-        self.send_response(200)
-        self.send_header("Content-Type", "text/html; charset=utf-8")
-        self.send_header("Content-Length", str(len(data)))
-        self.end_headers()
-        self.wfile.write(data)
-
-    def send_json(self, data, status=200):
-        data = normalize_tasks(data)
-        raw_data = json.dumps(data, ensure_ascii=False).encode("utf-8")
-        self.send_response(status)
-        self.send_header("Content-Type", "application/json; charset=utf-8")
-        self.send_header("Content-Length", str(len(raw_data)))
-        self.end_headers()
-        self.wfile.write(raw_data)
-
-    def log_message(self, format, *args):
-        return
+    save_tasks(tasks)
+    return tasks
 
 
 def main():
-    server = HTTPServer((HOST, PORT), TaskTrackerHandler)
     url = f"http://{HOST}:{PORT}"
     print(f"Трекер задач запущен: {url}")
     webbrowser.open(url)
-    server.serve_forever()
+    uvicorn.run(app, host=HOST, port=PORT)
 
 
 if __name__ == "__main__":

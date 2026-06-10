@@ -13,10 +13,22 @@ CLI Task Tracker на Python.
 python main.py
 ```
 
+## Установка зависимостей
+
+```bash
+pip install -r requirements.txt
+```
+
 ## Запуск в браузере
 
 ```bash
 python web.py
+```
+
+## API-документация
+
+```bash
+http://127.0.0.1:8000/docs
 ```
 
 ## Тесты
