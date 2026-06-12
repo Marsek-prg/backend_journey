@@ -23,10 +23,16 @@ class TaskServiceTest(unittest.TestCase):
 
         created_task = add_task(tasks, "Купить хлеб")
 
-        self.assertEqual(created_task, {"id": 1, "title": "Купить хлеб", "done": False})
+        self.assertEqual(
+            created_task,
+            {"id": 1, "title": "Купить хлеб", "done": False},
+        )
 
         updated_task = mark_task_done(tasks, 1)
-        self.assertEqual(updated_task, {"id": 1, "title": "Купить хлеб", "done": True})
+        self.assertEqual(
+            updated_task,
+            {"id": 1, "title": "Купить хлеб", "done": True},
+        )
 
         self.assertTrue(delete_task(tasks, 1))
         self.assertEqual(tasks, [])

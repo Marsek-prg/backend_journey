@@ -4,4 +4,5 @@ __pycache__/
 .idea/
 tasks.json
 tasks.db
+user_data.json
 *.log

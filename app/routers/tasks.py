@@ -3,7 +3,12 @@ from typing import Optional
 from fastapi import APIRouter, HTTPException, Response, status
 from pydantic import BaseModel, constr
 
-from app.services.task_service import add_task, delete_task, mark_task_done, update_task
+from app.services.task_service import (
+    add_task,
+    delete_task,
+    mark_task_done,
+    update_task,
+)
 from app.storage import database
 
 
