@@ -1,10 +1,10 @@
 import json
 from pathlib import Path
 
-from tasks import normalize_tasks
+from app.services.task_service import normalize_tasks
 
 
-TASKS_FILE = Path(__file__).resolve().parent / "tasks.json"
+TASKS_FILE = Path(__file__).resolve().parents[2] / "tasks.json"
 
 
 def load_tasks():
@@ -22,7 +22,11 @@ def load_tasks():
         print("tasks.json содержит неверный формат. Начинаем с пустого списка задач.")
         return []
 
-    return normalize_tasks(data)
+    tasks = normalize_tasks(data)
+    if tasks != data:
+        save_tasks(tasks)
+
+    return tasks
 
 
 def save_tasks(tasks):

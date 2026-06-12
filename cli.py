@@ -1,10 +1,10 @@
-from storage import load_tasks, save_tasks
-from tasks import (
+from app.services.task_service import (
     add_task,
     delete_task,
     get_tasks_text,
     mark_task_done,
 )
+from app.storage.database import load_tasks, save_tasks
 
 
 def show_menu():
@@ -18,7 +18,7 @@ def show_menu():
 
 def add_task_from_input(tasks):
     title = input("Введите название задачи: ").strip()
-    if not add_task(tasks, title):
+    if add_task(tasks, title) is None:
         print("Название задачи не может быть пустым.")
         return
 
@@ -48,7 +48,7 @@ def mark_task_done_from_input(tasks):
         print("Введите корректное число.")
         return
 
-    if mark_task_done(tasks, task_id):
+    if mark_task_done(tasks, task_id) is not None:
         save_tasks(tasks)
         print("Задача отмечена выполненной.")
         return
