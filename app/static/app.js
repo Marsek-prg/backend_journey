@@ -1,36 +1,136 @@
 const tasksList = document.querySelector("#tasks");
 const taskForm = document.querySelector("#task-form");
 const taskTitle = document.querySelector("#task-title");
+const taskError = document.querySelector("#task-error");
+const taskCount = document.querySelector("#task-count");
+
+function showFormError(message) {
+  taskError.textContent = message;
+  taskTitle.classList.toggle("input--error", Boolean(message));
+  taskTitle.setAttribute("aria-invalid", String(Boolean(message)));
+}
+
+function createButton(text, className) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.textContent = text;
+  button.className = `button ${className}`;
+  return button;
+}
+
+function showEmptyState() {
+  const emptyState = document.createElement("li");
+  emptyState.className = "empty-state";
+  emptyState.innerHTML = "<strong>Задач пока нет</strong>Добавьте первую задачу — она появится здесь.";
+  tasksList.append(emptyState);
+}
+
+async function updateTask(taskId, data) {
+  const response = await fetch(`/api/tasks/${taskId}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    throw new Error("Не удалось обновить задачу.");
+  }
+}
+
+function startEditing(task, content, titleElement, editButton) {
+  const input = document.createElement("input");
+  input.className = "task-edit-input";
+  input.value = task.title;
+  input.setAttribute("aria-label", "Новое название задачи");
+  content.replaceChild(input, titleElement);
+  editButton.textContent = "Сохранить";
+  input.focus();
+  input.select();
+
+  const save = async () => {
+    const newTitle = input.value.trim();
+    if (!newTitle) {
+      input.focus();
+      return;
+    }
+
+    await updateTask(task.id, { title: newTitle });
+    await loadTasks();
+  };
+
+  editButton.onclick = save;
+  input.addEventListener("keydown", async (event) => {
+    if (event.key === "Enter") {
+      await save();
+    }
+    if (event.key === "Escape") {
+      await loadTasks();
+    }
+  });
+}
+
+function renderTask(task) {
+  const item = document.createElement("li");
+  const statusButton = document.createElement("button");
+  const content = document.createElement("div");
+  const title = document.createElement("span");
+  const meta = document.createElement("span");
+  const actions = document.createElement("div");
+  const editButton = createButton("Изменить", "button--secondary");
+  const deleteButton = createButton("Удалить", "button--danger");
+
+  item.className = `task-item${task.done ? " task-item--completed" : ""}`;
+  statusButton.type = "button";
+  statusButton.className = "task-item__status";
+  statusButton.textContent = "✓";
+  statusButton.setAttribute(
+    "aria-label",
+    task.done ? `Задача «${task.title}» выполнена` : `Отметить задачу «${task.title}» выполненной`,
+  );
+  title.className = "task-item__title";
+  title.textContent = task.title;
+  meta.className = "task-item__meta";
+  meta.textContent = task.done ? "Выполнено" : `Задача №${task.id}`;
+  content.className = "task-item__content";
+  actions.className = "task-item__actions";
+
+  statusButton.addEventListener("click", async () => {
+    if (task.done) {
+      await updateTask(task.id, { done: false });
+    } else {
+      await fetch(`/api/tasks/${task.id}/done`, { method: "PATCH" });
+    }
+    await loadTasks();
+  });
+
+  editButton.addEventListener("click", () => {
+    startEditing(task, content, title, editButton);
+  });
+
+  deleteButton.addEventListener("click", async () => {
+    await fetch(`/api/tasks/${task.id}`, { method: "DELETE" });
+    await loadTasks();
+  });
+
+  content.append(title, meta);
+  actions.append(editButton, deleteButton);
+  item.append(statusButton, content, actions);
+  tasksList.append(item);
+}
 
 async function loadTasks() {
   const response = await fetch("/api/tasks");
   const tasks = await response.json();
 
   tasksList.innerHTML = "";
+  taskCount.textContent = tasks.length ? `${tasks.length} шт.` : "";
 
-  for (const task of tasks) {
-    const item = document.createElement("li");
-    const title = document.createElement("span");
-    const doneButton = document.createElement("button");
-    const deleteButton = document.createElement("button");
-
-    title.textContent = `${task.id}. ${task.title} [${task.done ? "Выполнена" : "Не выполнена"}]`;
-    doneButton.textContent = "Готово";
-    deleteButton.textContent = "Удалить";
-
-    doneButton.addEventListener("click", async () => {
-      await fetch(`/api/tasks/${task.id}/done`, { method: "PATCH" });
-      await loadTasks();
-    });
-
-    deleteButton.addEventListener("click", async () => {
-      await fetch(`/api/tasks/${task.id}`, { method: "DELETE" });
-      await loadTasks();
-    });
-
-    item.append(title, doneButton, deleteButton);
-    tasksList.append(item);
+  if (tasks.length === 0) {
+    showEmptyState();
+    return;
   }
+
+  tasks.forEach(renderTask);
 }
 
 taskForm.addEventListener("submit", async (event) => {
@@ -38,10 +138,13 @@ taskForm.addEventListener("submit", async (event) => {
 
   const title = taskTitle.value.trim();
   if (!title) {
+    showFormError("Введите название задачи.");
+    taskTitle.focus();
     return;
   }
 
-  await fetch("/api/tasks", {
+  showFormError("");
+  const response = await fetch("/api/tasks", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -49,8 +152,19 @@ taskForm.addEventListener("submit", async (event) => {
     body: JSON.stringify({ title }),
   });
 
+  if (!response.ok) {
+    showFormError("Не удалось добавить задачу. Попробуйте ещё раз.");
+    return;
+  }
+
   taskTitle.value = "";
   await loadTasks();
+});
+
+taskTitle.addEventListener("input", () => {
+  if (taskTitle.value.trim()) {
+    showFormError("");
+  }
 });
 
 loadTasks();
