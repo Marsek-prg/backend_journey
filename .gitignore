@@ -6,3 +6,6 @@ tasks.json
 tasks.db
 user_data.json
 *.log
+dist/
+build/
+*.spec
