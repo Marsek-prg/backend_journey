@@ -3,21 +3,43 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#eef3ee">
     <title>Трекер задач</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/style.css?v=20260618-2">
   </head>
   <body>
     <main class="page">
-      <h1>Трекер задач</h1>
+      <section class="task-card" aria-labelledby="page-title">
+        <header class="task-card__header">
+          <span class="task-card__eyebrow">Мой список</span>
+          <h1 id="page-title">Трекер задач</h1>
+          <p>Записывайте важное, отмечайте выполненное и сохраняйте фокус на главном.</p>
+        </header>
 
-      <form id="task-form">
-        <input id="task-title" name="title" type="text" placeholder="Название задачи">
-        <button type="submit">Добавить</button>
-      </form>
+        <form id="task-form" class="task-form" novalidate>
+          <div class="task-form__field">
+            <label class="visually-hidden" for="task-title">Название новой задачи</label>
+            <input
+              id="task-title"
+              name="title"
+              type="text"
+              placeholder="Например, подготовить отчёт"
+              autocomplete="off"
+              aria-describedby="task-error"
+            >
+            <p id="task-error" class="form-error" role="alert" aria-live="polite"></p>
+          </div>
+          <button class="button button--primary" type="submit">Добавить</button>
+        </form>
 
-      <ul id="tasks"></ul>
+        <div class="task-list__heading">
+          <h2>Задачи</h2>
+          <span id="task-count" class="task-count" aria-live="polite"></span>
+        </div>
+        <ul id="tasks" class="task-list" aria-live="polite"></ul>
+      </section>
     </main>
 
-    <script src="/static/app.js"></script>
+    <script src="/static/app.js?v=20260618"></script>
   </body>
 </html>
