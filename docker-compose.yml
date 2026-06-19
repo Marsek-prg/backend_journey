@@ -1,0 +1,13 @@
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      TASK_TRACKER_DATA_DIR: /data
+    volumes:
+      - tasktracker_data:/data
+
+volumes:
+  tasktracker_data:
+    name: tasktracker_data

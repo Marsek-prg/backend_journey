@@ -39,6 +39,35 @@ uvicorn app.main:app --reload
 http://127.0.0.1:8000
 ```
 
+## Запуск через Docker
+
+Собери образ и запусти web/API-версию приложения:
+
+```bash
+docker compose up --build
+```
+
+После запуска открой:
+
+```text
+http://127.0.0.1:8000
+```
+
+Задачи сохраняются в Docker volume `tasktracker_data`, поэтому остаются после
+остановки и повторного запуска контейнера.
+
+Остановить контейнеры:
+
+```bash
+docker compose down
+```
+
+Чтобы вместе с контейнерами удалить volume и все сохранённые задачи:
+
+```bash
+docker compose down -v
+```
+
 ## Запуск CLI-версии
 
 ```bash
