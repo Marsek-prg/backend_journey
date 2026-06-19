@@ -1,47 +1,103 @@
-# Backend Journey
+# Task Tracker
 
-Учебный backend-проект: простой трекер задач с CLI-версией и REST API на FastAPI.
+Task Tracker —  Python/FastAPI проект для управления задачами с несколькими вариантами запуска: Web/API, CLI, Desktop-приложение для Windows и Docker.
+
+Проект начинался как простой консольный список задач, но постепенно был расширен до полноценного проекта с REST API,
+веб-интерфейсом, desktop-версией, Docker-запуском, тестами и сборкой `.exe`.
 
 ## Возможности
 
-- создавать задачи;
-- получать список задач;
-- редактировать название и статус задачи;
-- отмечать задачу выполненной;
-- удалять задачи;
-- сохранять данные в JSON-файл.
+* Просмотр списка задач
+* Добавление новой задачи
+* Редактирование задачи
+* Отметка задачи как выполненной
+* Удаление задачи
+* Хранение задач в локальном JSON-файле
+* Web-интерфейс на FastAPI
+* REST API для работы с задачами
+* CLI-версия
+* Desktop-версия для Windows
+* Docker-запуск web/API-версии
+* Unit/API-тесты
+
+## Варианты запуска
+
+| Вариант        | Команда / способ                | Для чего нужен                      |
+| -------------- | ------------------------------- | ----------------------------------- |
+| Web/API        | `uvicorn app.main:app --reload` | Локальная разработка и проверка API |
+| CLI            | `python cli.py`                 | Консольная версия приложения        |
+| Desktop        | `python desktop.py`             | Desktop-запуск через Python         |
+| Windows `.exe` | GitHub Releases                 | Запуск без установленного Python    |
+| Docker         | `docker compose up --build`     | Запуск web/API в контейнере         |
 
 ## Стек технологий
 
-- Python;
-- FastAPI;
-- Uvicorn;
-- Pydantic;
-- unittest.
+* Python
+* FastAPI
+* Uvicorn
+* HTML
+* CSS
+* JavaScript
+* pywebview
+* PyInstaller
+* Docker
+* Docker Compose
+* unittest
+* httpx
 
-## Установка
+## Структура проекта
+
+```text
+backend_journey/
+├── app/
+│   ├── core/
+│   │   └── paths.py
+│   ├── routers/
+│   │   └── tasks.py
+│   ├── services/
+│   │   └── task_service.py
+│   ├── storage/
+│   │   └── database.py
+│   ├── static/
+│   │   ├── app.js
+│   │   └── style.css
+│   ├── templates/
+│   │   └── index.html
+│   └── main.py
+├── scripts/
+├── tests/
+├── cli.py
+├── desktop.py
+├── Dockerfile
+├── docker-compose.yml
+├── requirements.txt
+├── requirements-desktop.txt
+├── requirements-build.txt
+└── README.md
+```
+
+## Быстрый запуск Web/API
 
 ```bash
 python -m venv .venv
 .venv\Scripts\activate
 pip install -r requirements.txt
-```
-
-## Запуск FastAPI-версии
-
-```bash
 uvicorn app.main:app --reload
 ```
 
-После запуска открой:
+После запуска приложение будет доступно:
 
 ```text
 http://127.0.0.1:8000
 ```
 
-## Запуск через Docker
+API-документация:
 
-Собери образ и запусти web/API-версию приложения:
+```text
+http://127.0.0.1:8000/docs
+```
+
+## Запуск через Docker
 
 ```bash
 docker compose up --build
@@ -53,90 +109,91 @@ docker compose up --build
 http://127.0.0.1:8000
 ```
 
-Задачи сохраняются в Docker volume `tasktracker_data`, поэтому остаются после
-остановки и повторного запуска контейнера.
-
-Остановить контейнеры:
+Остановить контейнер:
 
 ```bash
 docker compose down
 ```
 
-Чтобы вместе с контейнерами удалить volume и все сохранённые задачи:
+Остановить контейнер и удалить сохранённые задачи:
 
 ```bash
 docker compose down -v
 ```
 
-## Запуск CLI-версии
-
-```bash
-python cli.py
-```
+Данные в Docker сохраняются в volume `tasktracker_data`.
 
 ## Desktop-версия
 
-Desktop-версия использует готовый web-интерфейс Task Tracker внутри обычного
-окна Windows. При запуске FastAPI-сервер работает локально в фоновом потоке, а
-`pywebview` открывает приложение без отдельного окна браузера.
+Desktop-версия использует готовый web-интерфейс и открывает его в отдельном окне приложения.
 
-Установи зависимости desktop-версии:
+Установка desktop-зависимостей:
 
 ```bash
 pip install -r requirements-desktop.txt
 ```
 
-Запусти приложение:
+Запуск:
 
 ```bash
 python desktop.py
 ```
 
-На Windows для отображения окна может потребоваться Microsoft Edge WebView2
-Runtime. Обычно он уже установлен в Windows 10 и Windows 11. Если `pywebview`
-сообщает об отсутствии web-компонента, установи WebView2 Runtime вручную с
-официального сайта Microsoft.
+## Windows `.exe`
 
-Задачи сохраняются в пользовательской папке `%APPDATA%\TaskTracker\tasks.json`,
-поэтому данные не зависят от расположения исходников или `.exe`.
+Готовую Windows-версию можно скачать в разделе Releases.
 
-## Сборка desktop-приложения в `.exe`
+Как запустить:
 
-Основной способ сборки на Windows — скрипт `scripts\build_desktop.bat`.
-Запускай команды из корня проекта:
+1. Скачать архив `TaskTracker_win.zip`
+2. Распаковать архив
+3. Открыть папку `TaskTracker`
+4. Запустить `TaskTracker.exe`
 
-```bash
-pip install -r requirements-desktop.txt
-pip install -r requirements-build.txt
-scripts\build_desktop.bat
+Python устанавливать не нужно.
+
+Данные desktop-версии сохраняются в:
+
+```text
+%APPDATA%\TaskTracker\tasks.json
 ```
 
-Скрипт использует Python из `.venv`, устанавливает необходимые зависимости и
-создаёт сборку PyInstaller в режиме `onedir`. Готовое приложение находится по
-пути `dist/TaskTracker/TaskTracker.exe`.
+## CLI-версия
 
-Каталоги `dist/`, `build/` и создаваемый PyInstaller файл `.spec` являются
-артефактами сборки — их не нужно коммитить.
+```bash
+python cli.py
+```
 
-## Запуск тестов
+## Тесты
 
 ```bash
 python -m unittest discover -s tests -v
 ```
 
-## API endpoints
+## Основные API endpoints
 
-- `GET /api/tasks` — получить список задач;
-- `POST /api/tasks` — создать задачу;
-- `PATCH /api/tasks/{task_id}` — обновить задачу;
-- `PATCH /api/tasks/{task_id}/done` — отметить задачу выполненной;
-- `DELETE /api/tasks/{task_id}` — удалить задачу.
+| Метод    | Endpoint                    | Описание                    |
+| -------- | --------------------------- | --------------------------- |
+| `GET`    | `/`                         | Web-интерфейс               |
+| `GET`    | `/api/tasks`                | Получить список задач       |
+| `POST`   | `/api/tasks`                | Создать задачу              |
+| `PATCH`  | `/api/tasks/{task_id}`      | Обновить задачу             |
+| `POST`   | `/api/tasks/{task_id}/done` | Отметить задачу выполненной |
+| `DELETE` | `/api/tasks/{task_id}`      | Удалить задачу              |
 
-## Что изучено
 
-- структура FastAPI-приложения;
-- разделение routers, services, storage, templates и static;
-- REST API и HTTP-статусы;
-- Pydantic-схемы и валидация входных данных;
-- стабильные идентификаторы задач;
-- базовые unit/API-тесты на `unittest`.
+## Roadmap
+
+Планируемые улучшения:
+
+* GitHub Actions для автоматического запуска тестов
+* Ruff и Black для проверки качества кода
+* Отдельные Pydantic-схемы для API
+* Health-check endpoint
+* Улучшенный Docker healthcheck
+* Changelog и версионирование
+* Более надёжное JSON-хранилище
+* Фильтры задач
+* Приоритеты задач
+* Даты создания и обновления задач
+* Улучшение UX web-интерфейса
