@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Response, status
-from pydantic import BaseModel, constr
 
+from app.schemas.tasks import TaskCreate, TaskResponse, TaskUpdate
 from app.services.task_service import (
     add_task,
     delete_task,
@@ -10,21 +10,6 @@ from app.services.task_service import (
 from app.storage import database
 
 router = APIRouter(prefix="/api/tasks", tags=["tasks"])
-
-
-class TaskCreate(BaseModel):
-    title: constr(strip_whitespace=True, min_length=1)
-
-
-class TaskUpdate(BaseModel):
-    title: constr(strip_whitespace=True, min_length=1) | None = None
-    done: bool | None = None
-
-
-class TaskResponse(BaseModel):
-    id: int
-    title: str
-    done: bool
 
 
 @router.get("", response_model=list[TaskResponse])

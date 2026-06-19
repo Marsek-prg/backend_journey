@@ -54,6 +54,8 @@ backend_journey/
 │   │   └── paths.py
 │   ├── routers/
 │   │   └── tasks.py
+│   ├── schemas/
+│   │   └── tasks.py
 │   ├── services/
 │   │   └── task_service.py
 │   ├── storage/
@@ -203,21 +205,23 @@ ruff check .
 | Метод    | Endpoint                    | Описание                    |
 | -------- | --------------------------- | --------------------------- |
 | `GET`    | `/`                         | Web-интерфейс               |
+| `GET`    | `/health`                   | Проверка состояния приложения |
 | `GET`    | `/api/tasks`                | Получить список задач       |
 | `POST`   | `/api/tasks`                | Создать задачу              |
 | `PATCH`  | `/api/tasks/{task_id}`      | Обновить задачу             |
 | `POST`   | `/api/tasks/{task_id}/done` | Отметить задачу выполненной |
 | `DELETE` | `/api/tasks/{task_id}`      | Удалить задачу              |
 
+## Версия
+
+Текущая версия проекта: `v0.1.0`.
+
+История изменений ведётся в `CHANGELOG.md`.
 
 ## Roadmap
 
 Планируемые улучшения:
 
-* Отдельные Pydantic-схемы для API
-* Health-check endpoint
-* Улучшенный Docker healthcheck
-* Changelog и версионирование
 * Более надёжное JSON-хранилище
 * Фильтры задач
 * Приоритеты задач

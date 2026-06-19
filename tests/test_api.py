@@ -4,6 +4,7 @@ from pathlib import Path
 
 from httpx import ASGITransport, AsyncClient
 
+from app.__version__ import __version__
 from app.main import app
 from app.storage import database
 
@@ -39,6 +40,13 @@ class TaskApiTest(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertIn("Трекер задач", response.text)
+
+    async def test_health(self):
+        response = await self.client.get("/health")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["status"], "ok")
+        self.assertEqual(response.json()["version"], __version__)
 
     async def test_get_tasks_list(self):
         await self.client.post("/api/tasks", json={"title": "Первая"})
