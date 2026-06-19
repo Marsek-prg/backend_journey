@@ -1,10 +1,10 @@
 import json
-from pathlib import Path
 
+from app.core.paths import get_user_data_dir
 from app.services.task_service import normalize_tasks
 
 
-TASKS_FILE = Path(__file__).resolve().parents[2] / "tasks.json"
+TASKS_FILE = get_user_data_dir() / "tasks.json"
 
 
 def load_tasks():
@@ -31,6 +31,7 @@ def load_tasks():
 
 def save_tasks(tasks):
     tasks = normalize_tasks(tasks)
+    TASKS_FILE.parent.mkdir(parents=True, exist_ok=True)
 
     with open(TASKS_FILE, "w", encoding="utf-8") as file:
         json.dump(tasks, file, ensure_ascii=False, indent=2)

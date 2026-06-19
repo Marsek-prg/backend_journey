@@ -68,8 +68,26 @@ Runtime. Обычно он уже установлен в Windows 10 и Windows 
 сообщает об отсутствии web-компонента, установи WebView2 Runtime вручную с
 официального сайта Microsoft.
 
-Сборка отдельного `.exe` в эту версию проекта не входит и может быть добавлена
-следующим этапом.
+Задачи сохраняются в пользовательской папке `%APPDATA%\TaskTracker\tasks.json`,
+поэтому данные не зависят от расположения исходников или `.exe`.
+
+## Сборка desktop-приложения в `.exe`
+
+Основной способ сборки на Windows — скрипт `scripts\build_desktop.bat`.
+Запускай команды из корня проекта:
+
+```bash
+pip install -r requirements-desktop.txt
+pip install -r requirements-build.txt
+scripts\build_desktop.bat
+```
+
+Скрипт использует Python из `.venv`, устанавливает необходимые зависимости и
+создаёт сборку PyInstaller в режиме `onedir`. Готовое приложение находится по
+пути `dist/TaskTracker/TaskTracker.exe`.
+
+Каталоги `dist/`, `build/` и создаваемый PyInstaller файл `.spec` являются
+артефактами сборки — их не нужно коммитить.
 
 ## Запуск тестов
 
