@@ -1,5 +1,3 @@
-from typing import Optional
-
 from fastapi import APIRouter, HTTPException, Response, status
 from pydantic import BaseModel, constr
 
@@ -11,7 +9,6 @@ from app.services.task_service import (
 )
 from app.storage import database
 
-
 router = APIRouter(prefix="/api/tasks", tags=["tasks"])
 
 
@@ -20,8 +17,8 @@ class TaskCreate(BaseModel):
 
 
 class TaskUpdate(BaseModel):
-    title: Optional[constr(strip_whitespace=True, min_length=1)] = None
-    done: Optional[bool] = None
+    title: constr(strip_whitespace=True, min_length=1) | None = None
+    done: bool | None = None
 
 
 class TaskResponse(BaseModel):

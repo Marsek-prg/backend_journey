@@ -4,7 +4,6 @@ import os
 import sys
 from pathlib import Path
 
-
 APP_DATA_DIR_NAME = "TaskTracker"
 DATA_DIR_ENV_VAR = "TASK_TRACKER_DATA_DIR"
 

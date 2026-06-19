@@ -3,7 +3,6 @@
 import json
 from pathlib import Path
 
-
 TASKS_FILE = Path(__file__).resolve().parent / "lesson_tasks.json"
 
 
@@ -34,7 +33,7 @@ def save_tasks(tasks):
 
 def load_tasks():
     try:
-        with open(TASKS_FILE, "r", encoding="utf-8") as file:
+        with open(TASKS_FILE, encoding="utf-8") as file:
             return json.load(file)
     except FileNotFoundError:
         return []
