@@ -1,8 +1,10 @@
 from app.services.task_service import (
     add_task,
     delete_task,
+    filter_tasks_by_status,
     get_tasks_text,
     mark_task_done,
+    search_tasks,
 )
 from app.storage.database import load_tasks, save_tasks
 
@@ -10,10 +12,13 @@ from app.storage.database import load_tasks, save_tasks
 def show_menu():
     print("\n--- Трекер задач ---")
     print("1. Добавить задачу")
-    print("2. Показать задачи")
-    print("3. Отметить задачу выполненной")
-    print("4. Удалить задачу")
-    print("5. Выйти")
+    print("2. Показать все задачи")
+    print("3. Показать активные задачи")
+    print("4. Показать выполненные задачи")
+    print("5. Найти задачу")
+    print("6. Отметить задачу выполненной")
+    print("7. Удалить задачу")
+    print("8. Выйти")
 
 
 def add_task_from_input(tasks):
@@ -33,6 +38,15 @@ def show_tasks(tasks):
 
     for line in get_tasks_text(tasks):
         print(line)
+
+
+def find_tasks_from_input(tasks):
+    query = input("Введите текст для поиска: ").strip()
+    if not query:
+        print("Поисковый запрос не может быть пустым.")
+        return
+
+    show_tasks(search_tasks(tasks, query))
 
 
 def mark_task_done_from_input(tasks):
@@ -89,10 +103,16 @@ def main():
         elif choice == "2":
             show_tasks(tasks)
         elif choice == "3":
-            mark_task_done_from_input(tasks)
+            show_tasks(filter_tasks_by_status(tasks, "active"))
         elif choice == "4":
-            delete_task_from_input(tasks)
+            show_tasks(filter_tasks_by_status(tasks, "completed"))
         elif choice == "5":
+            find_tasks_from_input(tasks)
+        elif choice == "6":
+            mark_task_done_from_input(tasks)
+        elif choice == "7":
+            delete_task_from_input(tasks)
+        elif choice == "8":
             print("До свидания!")
             break
         else:

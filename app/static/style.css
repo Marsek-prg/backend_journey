@@ -103,6 +103,7 @@ h1 {
 }
 
 #task-title,
+.task-controls input,
 .task-edit-input {
     width: 100%;
     padding: 14px 16px;
@@ -118,12 +119,18 @@ h1 {
     color: #aaa397;
 }
 
+.task-controls input::placeholder {
+    color: #aaa397;
+}
+
 #task-title:hover,
+.task-controls input:hover,
 .task-edit-input:hover {
     border-color: #cfc3b4;
 }
 
 #task-title:focus,
+.task-controls input:focus,
 .task-edit-input:focus {
     border-color: var(--accent);
     box-shadow: 0 0 0 4px rgba(130, 151, 125, 0.16);
@@ -139,6 +146,60 @@ h1 {
     margin: 6px 4px 0;
     color: var(--error);
     font-size: 0.82rem;
+}
+
+.task-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.task-stats span {
+    padding: 12px;
+    border-radius: 12px;
+    color: var(--text-muted);
+    text-align: center;
+    background: var(--accent-soft);
+}
+
+.task-stats strong {
+    display: block;
+    margin-top: 3px;
+    color: var(--text-main);
+    font-size: 1.2rem;
+}
+
+.task-controls {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.task-filters {
+    display: flex;
+    gap: 4px;
+    padding: 4px;
+    border-radius: 12px;
+    background: #eee6da;
+}
+
+.filter-button {
+    padding: 8px 12px;
+    border-radius: 9px;
+    color: var(--text-muted);
+    background: transparent;
+    cursor: pointer;
+}
+
+.filter-button--active {
+    color: var(--accent-dark);
+    background: #fffdf9;
+    box-shadow: 0 2px 8px rgba(91, 76, 58, 0.08);
+}
+
+.task-controls input {
+    min-width: 0;
 }
 
 .button {
@@ -351,6 +412,19 @@ h1 {
     .task-form {
         flex-direction: column;
         margin-bottom: 28px;
+    }
+
+    .task-controls {
+        flex-direction: column;
+    }
+
+    .task-filters {
+        justify-content: center;
+    }
+
+    .filter-button {
+        flex: 1;
+        padding-inline: 6px;
     }
 
     .task-form__field,

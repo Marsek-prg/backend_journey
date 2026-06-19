@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#eef3ee">
     <title>Трекер задач</title>
-    <link rel="stylesheet" href="/static/style.css?v=20260618-2">
+    <link rel="stylesheet" href="/static/style.css?v=20260620">
   </head>
   <body>
     <main class="page">
@@ -32,6 +32,22 @@
           <button class="button button--primary" type="submit">Добавить</button>
         </form>
 
+        <section class="task-stats" aria-label="Статистика задач">
+          <span>Всего <strong id="stats-total">0</strong></span>
+          <span>Активных <strong id="stats-active">0</strong></span>
+          <span>Выполненных <strong id="stats-completed">0</strong></span>
+        </section>
+
+        <div class="task-controls">
+          <div class="task-filters" role="group" aria-label="Фильтр задач">
+            <button class="filter-button filter-button--active" type="button" data-status="all">Все</button>
+            <button class="filter-button" type="button" data-status="active">Активные</button>
+            <button class="filter-button" type="button" data-status="completed">Выполненные</button>
+          </div>
+          <label class="visually-hidden" for="task-search">Поиск задач</label>
+          <input id="task-search" type="search" placeholder="Поиск по задачам" autocomplete="off">
+        </div>
+
         <div class="task-list__heading">
           <h2>Задачи</h2>
           <span id="task-count" class="task-count" aria-live="polite"></span>
@@ -40,6 +56,6 @@
       </section>
     </main>
 
-    <script src="/static/app.js?v=20260618"></script>
+    <script src="/static/app.js?v=20260620"></script>
   </body>
 </html>

@@ -3,12 +3,42 @@ import unittest
 from app.services.task_service import (
     add_task,
     delete_task,
+    filter_tasks_by_status,
+    get_tasks_stats,
     get_tasks_text,
     mark_task_done,
+    search_tasks,
 )
 
 
 class TaskServiceTest(unittest.TestCase):
+    def setUp(self):
+        self.tasks = [
+            {"id": 1, "title": "Купить хлеб", "done": False},
+            {"id": 2, "title": "Написать TEST", "done": True},
+            {"id": 3, "title": "Домашняя работа", "done": False},
+        ]
+
+    def test_filter_tasks_by_status(self):
+        self.assertEqual(
+            filter_tasks_by_status(self.tasks, "active"),
+            [self.tasks[0], self.tasks[2]],
+        )
+        self.assertEqual(
+            filter_tasks_by_status(self.tasks, "completed"),
+            [self.tasks[1]],
+        )
+
+    def test_search_tasks_by_title_part_case_insensitive(self):
+        self.assertEqual(search_tasks(self.tasks, "test"), [self.tasks[1]])
+        self.assertEqual(search_tasks(self.tasks, "ХЛЕБ"), [self.tasks[0]])
+
+    def test_get_tasks_stats(self):
+        self.assertEqual(
+            get_tasks_stats(self.tasks),
+            {"total": 3, "active": 2, "completed": 1},
+        )
+
     def test_add_task_rejects_empty_title(self):
         tasks = []
 
