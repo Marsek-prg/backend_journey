@@ -71,24 +71,23 @@ Runtime. Обычно он уже установлен в Windows 10 и Windows 
 Задачи сохраняются в пользовательской папке `%APPDATA%\TaskTracker\tasks.json`,
 поэтому данные не зависят от расположения исходников или `.exe`.
 
-## Сборка `.exe`
+## Сборка desktop-приложения в `.exe`
 
-Установи зависимости приложения и сборки:
+Основной способ сборки на Windows — скрипт `scripts\build_desktop.bat`.
+Запускай команды из корня проекта:
 
 ```bash
 pip install -r requirements-desktop.txt
 pip install -r requirements-build.txt
+scripts\build_desktop.bat
 ```
 
-Собери приложение из корня проекта:
+Скрипт использует Python из `.venv`, устанавливает необходимые зависимости и
+создаёт сборку PyInstaller в режиме `onedir`. Готовое приложение находится по
+пути `dist/TaskTracker/TaskTracker.exe`.
 
-```bash
-pyinstaller --noconfirm --onefile --windowed --name TaskTracker --add-data "app/templates;app/templates" --add-data "app/static;app/static" desktop.py
-```
-
-Готовый файл будет создан как `dist\TaskTracker.exe`. Каталоги `dist/`,
-`build/` и создаваемый PyInstaller файл `.spec` являются артефактами сборки —
-их не нужно коммитить.
+Каталоги `dist/`, `build/` и создаваемый PyInstaller файл `.spec` являются
+артефактами сборки — их не нужно коммитить.
 
 ## Запуск тестов
 
