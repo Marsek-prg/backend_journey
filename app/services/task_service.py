@@ -62,6 +62,34 @@ def get_tasks_text(tasks):
     return lines
 
 
+def filter_tasks_by_status(tasks, status):
+    if status in (None, "all"):
+        return list(tasks)
+    if status == "active":
+        return [task for task in tasks if not task["done"]]
+    if status == "completed":
+        return [task for task in tasks if task["done"]]
+
+    raise ValueError(f"Неизвестный статус: {status}")
+
+
+def search_tasks(tasks, query):
+    query = (query or "").strip().casefold()
+    if not query:
+        return list(tasks)
+
+    return [task for task in tasks if query in task["title"].casefold()]
+
+
+def get_tasks_stats(tasks):
+    completed = sum(1 for task in tasks if task["done"])
+    return {
+        "total": len(tasks),
+        "active": len(tasks) - completed,
+        "completed": completed,
+    }
+
+
 def mark_task_done(tasks, task_id):
     for task in tasks:
         if task["id"] == task_id:

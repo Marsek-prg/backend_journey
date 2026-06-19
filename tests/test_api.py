@@ -63,6 +63,54 @@ class TaskApiTest(unittest.IsolatedAsyncioTestCase):
             ],
         )
 
+    async def test_filter_tasks_by_status(self):
+        await self.client.post("/api/tasks", json={"title": "Активная"})
+        await self.client.post("/api/tasks", json={"title": "Выполненная"})
+        await self.client.patch("/api/tasks/2/done")
+
+        active = await self.client.get("/api/tasks?status=active")
+        completed = await self.client.get("/api/tasks?status=completed")
+
+        self.assertEqual([task["title"] for task in active.json()], ["Активная"])
+        self.assertEqual([task["title"] for task in completed.json()], ["Выполненная"])
+
+    async def test_unknown_status_returns_400(self):
+        response = await self.client.get("/api/tasks?status=unknown")
+
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("Неизвестный статус", response.json()["detail"])
+
+    async def test_search_tasks_by_title_part_case_insensitive(self):
+        await self.client.post("/api/tasks", json={"title": "Написать TEST"})
+        await self.client.post("/api/tasks", json={"title": "Купить хлеб"})
+
+        response = await self.client.get("/api/tasks?q=test")
+        uppercase_response = await self.client.get("/api/tasks?q=ХЛЕБ")
+
+        self.assertEqual([task["title"] for task in response.json()], ["Написать TEST"])
+        self.assertEqual(
+            [task["title"] for task in uppercase_response.json()], ["Купить хлеб"]
+        )
+
+    async def test_status_and_search_can_be_combined(self):
+        await self.client.post("/api/tasks", json={"title": "Дом активная"})
+        await self.client.post("/api/tasks", json={"title": "Дом завершенная"})
+        await self.client.patch("/api/tasks/2/done")
+
+        response = await self.client.get("/api/tasks?status=active&q=дом")
+
+        self.assertEqual([task["title"] for task in response.json()], ["Дом активная"])
+
+    async def test_tasks_stats(self):
+        await self.client.post("/api/tasks", json={"title": "Первая"})
+        await self.client.post("/api/tasks", json={"title": "Вторая"})
+        await self.client.patch("/api/tasks/2/done")
+
+        response = await self.client.get("/api/tasks/stats")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {"total": 2, "active": 1, "completed": 1})
+
     async def test_update_task(self):
         await self.client.post("/api/tasks", json={"title": "Старое название"})
 

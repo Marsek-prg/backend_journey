@@ -3,6 +3,13 @@ const taskForm = document.querySelector("#task-form");
 const taskTitle = document.querySelector("#task-title");
 const taskError = document.querySelector("#task-error");
 const taskCount = document.querySelector("#task-count");
+const taskSearch = document.querySelector("#task-search");
+const filterButtons = document.querySelectorAll(".filter-button");
+const statsTotal = document.querySelector("#stats-total");
+const statsActive = document.querySelector("#stats-active");
+const statsCompleted = document.querySelector("#stats-completed");
+let currentStatus = "all";
+let searchTimer;
 
 function showFormError(message) {
   taskError.textContent = message;
@@ -21,8 +28,22 @@ function createButton(text, className) {
 function showEmptyState() {
   const emptyState = document.createElement("li");
   emptyState.className = "empty-state";
-  emptyState.innerHTML = "<strong>Задач пока нет</strong>Добавьте первую задачу — она появится здесь.";
+  const hasFilters = currentStatus !== "all" || taskSearch.value.trim();
+  emptyState.innerHTML = hasFilters
+    ? "<strong>Ничего не найдено</strong>Измените фильтр или поисковый запрос."
+    : "<strong>Задач пока нет</strong>Добавьте первую задачу — она появится здесь.";
   tasksList.append(emptyState);
+}
+
+async function loadStats() {
+  const response = await fetch("/api/tasks/stats");
+  if (!response.ok) {
+    throw new Error("Не удалось загрузить статистику.");
+  }
+  const stats = await response.json();
+  statsTotal.textContent = stats.total;
+  statsActive.textContent = stats.active;
+  statsCompleted.textContent = stats.completed;
 }
 
 async function updateTask(taskId, data) {
@@ -119,8 +140,18 @@ function renderTask(task) {
 }
 
 async function loadTasks() {
-  const response = await fetch("/api/tasks");
+  const params = new URLSearchParams({ status: currentStatus });
+  const query = taskSearch.value.trim();
+  if (query) {
+    params.set("q", query);
+  }
+  const response = await fetch(`/api/tasks?${params}`);
+  if (!response.ok) {
+    throw new Error("Не удалось загрузить задачи.");
+  }
   const tasks = await response.json();
+
+  await loadStats();
 
   tasksList.innerHTML = "";
   taskCount.textContent = tasks.length ? `${tasks.length} шт.` : "";
@@ -165,6 +196,21 @@ taskTitle.addEventListener("input", () => {
   if (taskTitle.value.trim()) {
     showFormError("");
   }
+});
+
+filterButtons.forEach((button) => {
+  button.addEventListener("click", async () => {
+    currentStatus = button.dataset.status;
+    filterButtons.forEach((item) => {
+      item.classList.toggle("filter-button--active", item === button);
+    });
+    await loadTasks();
+  });
+});
+
+taskSearch.addEventListener("input", () => {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(loadTasks, 250);
 });
 
 loadTasks();

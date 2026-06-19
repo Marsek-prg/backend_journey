@@ -4,7 +4,10 @@ from app.schemas.tasks import TaskCreate, TaskResponse, TaskUpdate
 from app.services.task_service import (
     add_task,
     delete_task,
+    filter_tasks_by_status,
+    get_tasks_stats,
     mark_task_done,
+    search_tasks,
     update_task,
 )
 from app.storage import database
@@ -13,8 +16,19 @@ router = APIRouter(prefix="/api/tasks", tags=["tasks"])
 
 
 @router.get("", response_model=list[TaskResponse])
-def list_tasks():
-    return database.load_tasks()
+def list_tasks(status: str | None = None, q: str | None = None):
+    tasks = database.load_tasks()
+    try:
+        tasks = filter_tasks_by_status(tasks, status)
+    except ValueError as error:
+        raise HTTPException(status_code=400, detail=str(error)) from error
+
+    return search_tasks(tasks, q)
+
+
+@router.get("/stats")
+def task_stats():
+    return get_tasks_stats(database.load_tasks())
 
 
 @router.post("", response_model=TaskResponse, status_code=status.HTTP_201_CREATED)
