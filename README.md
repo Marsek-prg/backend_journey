@@ -101,6 +101,20 @@ http://127.0.0.1:8000/docs
 
 ## Запуск через Docker
 
+Собрать Docker-образ:
+
+```bash
+docker build -t backend-journey-api .
+```
+
+Запустить контейнер:
+
+```bash
+docker run --rm -p 8000:8000 backend-journey-api
+```
+
+Или собрать и запустить приложение через Docker Compose:
+
 ```bash
 docker compose up --build
 ```
@@ -116,14 +130,6 @@ http://127.0.0.1:8000
 ```bash
 docker compose down
 ```
-
-Остановить контейнер и удалить сохранённые задачи:
-
-```bash
-docker compose down -v
-```
-
-Данные в Docker сохраняются в volume `tasktracker_data`.
 
 ## Desktop-версия
 
@@ -191,14 +197,8 @@ ruff check .
 
 ## Автоматические проверки
 
-В проекте настроен GitHub Actions workflow, который запускается при push и pull request.
-
-Он проверяет:
-
-- синтаксис Python-файлов;
-- форматирование через Black;
-- качество кода через Ruff;
-- unit/API-тесты.
+GitHub Actions автоматически запускает тесты при каждом `push` и `pull_request`.
+CI также проверяет, что Docker-образ проекта успешно собирается.
 
 ## Основные API endpoints
 
