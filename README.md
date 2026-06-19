@@ -170,6 +170,34 @@ python cli.py
 python -m unittest discover -s tests -v
 ```
 
+## Качество кода
+
+Для проверки и форматирования кода используются Black и Ruff.
+
+```bash
+pip install -r requirements-dev.txt
+black .
+ruff check .
+```
+
+Для проверки без изменения файлов:
+
+```bash
+black --check .
+ruff check .
+```
+
+## Автоматические проверки
+
+В проекте настроен GitHub Actions workflow, который запускается при push и pull request.
+
+Он проверяет:
+
+- синтаксис Python-файлов;
+- форматирование через Black;
+- качество кода через Ruff;
+- unit/API-тесты.
+
 ## Основные API endpoints
 
 | Метод    | Endpoint                    | Описание                    |
@@ -186,8 +214,6 @@ python -m unittest discover -s tests -v
 
 Планируемые улучшения:
 
-* GitHub Actions для автоматического запуска тестов
-* Ruff и Black для проверки качества кода
 * Отдельные Pydantic-схемы для API
 * Health-check endpoint
 * Улучшенный Docker healthcheck

@@ -3,7 +3,6 @@ import json
 from app.core.paths import get_user_data_dir
 from app.services.task_service import normalize_tasks
 
-
 TASKS_FILE = get_user_data_dir() / "tasks.json"
 
 
@@ -12,7 +11,7 @@ def load_tasks():
         return []
 
     try:
-        with open(TASKS_FILE, "r", encoding="utf-8") as file:
+        with open(TASKS_FILE, encoding="utf-8") as file:
             data = json.load(file)
     except json.JSONDecodeError:
         print("tasks.json поврежден. Начинаем с пустого списка задач.")

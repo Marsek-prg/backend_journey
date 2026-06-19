@@ -1,8 +1,8 @@
 """Desktop launcher for the Task Tracker web application."""
 
+import json
 import threading
 import time
-import json
 from urllib.error import URLError
 from urllib.request import urlopen
 
@@ -10,7 +10,6 @@ import uvicorn
 import webview
 
 from app.main import app
-
 
 HOST = "127.0.0.1"
 PORT = 8000

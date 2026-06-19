@@ -5,7 +5,6 @@ from app.services.task_service import (
     delete_task,
     get_tasks_text,
     mark_task_done,
-    normalize_tasks,
 )
 
 

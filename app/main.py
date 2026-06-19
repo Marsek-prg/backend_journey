@@ -5,7 +5,6 @@ from fastapi.staticfiles import StaticFiles
 from app.core.paths import get_static_dir, get_templates_dir
 from app.routers import tasks
 
-
 TEMPLATES_DIR = get_templates_dir()
 STATIC_DIR = get_static_dir()
 
